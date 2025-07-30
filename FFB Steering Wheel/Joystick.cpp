@@ -42,28 +42,28 @@
 #define JOYSTICK_INCLUDE_STEERING    B00010000
 
 Joystick_::Joystick_(
-											uint8_t hidReportId,
-											uint8_t joystickType,
-  										uint8_t buttonCount,
-											uint8_t hatSwitchCount,
+			uint8_t hidReportId,
+			uint8_t joystickType,
+  			uint8_t buttonCount,
+			uint8_t hatSwitchCount,
 
-											bool includeXAxis,
-											bool includeYAxis,
-											bool includeZAxis,
-											bool includeRxAxis,
-											bool includeRyAxis,
-											bool includeRzAxis,
-											bool includeRudder,
-											bool includeThrottle,
-											bool includeAccelerator,
-											bool includeBrake,
-											bool includeSteering
-										)
+			bool includeXAxis,
+			bool includeYAxis,
+			bool includeZAxis,
+			bool includeRxAxis,
+			bool includeRyAxis,
+			bool includeRzAxis,
+			bool includeRudder,
+			bool includeThrottle,
+			bool includeAccelerator,
+			bool includeBrake,
+			bool includeSteering
+		)
 {
     // Set the USB HID Report ID
-  _hidReportId = hidReportId;
+	_hidReportId = hidReportId;
     // Save Joystick Settings
-  _buttonCount = buttonCount;
+	_buttonCount = buttonCount;
 	_hatSwitchCount = hatSwitchCount;
 
 	_includeAxisFlags = 0;
@@ -109,24 +109,24 @@ Joystick_::Joystick_(
 	int hidReportDescriptorSize = 0;
 
   // USAGE_PAGE (Generic Desktop)
-  tempHidReportDescriptor[hidReportDescriptorSize++] = 0x05;
-  tempHidReportDescriptor[hidReportDescriptorSize++] = 0x01;
+  	tempHidReportDescriptor[hidReportDescriptorSize++] = 0x05;
+  	tempHidReportDescriptor[hidReportDescriptorSize++] = 0x01;
 
   // USAGE (Joystick - 0x04; Gamepad - 0x05; Multi-axis Controller - 0x08)
-  tempHidReportDescriptor[hidReportDescriptorSize++] = 0x09;
-  tempHidReportDescriptor[hidReportDescriptorSize++] = joystickType;
+  	tempHidReportDescriptor[hidReportDescriptorSize++] = 0x09;
+  	tempHidReportDescriptor[hidReportDescriptorSize++] = joystickType;
 
   // COLLECTION (Application)
-  tempHidReportDescriptor[hidReportDescriptorSize++] = 0xa1;
-  tempHidReportDescriptor[hidReportDescriptorSize++] = 0x01;
+ 	tempHidReportDescriptor[hidReportDescriptorSize++] = 0xa1;
+  	tempHidReportDescriptor[hidReportDescriptorSize++] = 0x01;
 
 	// USAGE (Pointer)
 	tempHidReportDescriptor[hidReportDescriptorSize++] = 0x09;
 	tempHidReportDescriptor[hidReportDescriptorSize++] = 0x01;
 
   // REPORT_ID (Default: 1)
-  tempHidReportDescriptor[hidReportDescriptorSize++] = 0x85;
-  tempHidReportDescriptor[hidReportDescriptorSize++] = 0x01;
+  	tempHidReportDescriptor[hidReportDescriptorSize++] = 0x85;
+  	tempHidReportDescriptor[hidReportDescriptorSize++] = 0x01;
 
 	// COLLECTION (Physical)
 	tempHidReportDescriptor[hidReportDescriptorSize++] = 0xa1;
@@ -438,7 +438,7 @@ Joystick_::Joystick_(
 	} // Simulation Controls
 
     // END_COLLECTION
-  tempHidReportDescriptor[hidReportDescriptorSize++] = 0xc0;
+  	tempHidReportDescriptor[hidReportDescriptorSize++] = 0xc0;
 
 	// Create a copy of the HID Report Descriptor template that is just the right size
 	uint8_t *customHidReportDescriptor = new uint8_t[hidReportDescriptorSize];
@@ -449,7 +449,7 @@ Joystick_::Joystick_(
 	
 	DynamicHID().AppendDescriptor(node);
 	
-    // Setup Joystick State
+   	// Setup Joystick State
 	if (buttonCount > 0) {
 		_buttonValuesArraySize = _buttonCount / 8;
 		if ((_buttonCount % 8) > 0) {
@@ -482,11 +482,11 @@ Joystick_::Joystick_(
 		_hatSwitchValues[index] = JOYSTICK_HATSWITCH_RELEASE;
 
 	}
-  for (int index = 0; index < _buttonValuesArraySize; index++){
+  	for (int index = 0; index < _buttonValuesArraySize; index++){
 
-  	_buttonValues[index] = 0;
+  		_buttonValues[index] = 0;
 
-  }
+  	}
 }
 
 void Joystick_::begin(bool initAutoSendState) {
@@ -542,19 +542,19 @@ int32_t Joystick_::getEffectForce(volatile TEffectState& effect, Gains _gains, u
 
 void Joystick_::forceCalculator(int32_t* forces) {
 	forces[0] = 0;
-  forces[1] = 0;
+	forces[1] = 0;
 	for (int id = 0; id < MAX_EFFECTS; id++) {
 		volatile TEffectState& effect = DynamicHID().pidReportHandler.g_EffectStates[id];
-	  if ((effect.state == MEFFECTSTATE_PLAYING) && ((effect.elapsedTime <= effect.duration) ||
-	    (effect.duration == USB_DURATION_INFINITE)) && !DynamicHID().pidReportHandler.devicePaused) {
+	  	if ((effect.state == MEFFECTSTATE_PLAYING) && ((effect.elapsedTime <= effect.duration) ||
+	    	(effect.duration == USB_DURATION_INFINITE)) && !DynamicHID().pidReportHandler.devicePaused) {
 			forces[0] += (int32_t)(getEffectForce(effect, m_gains[0], 0));
-				//forces[1] += (int32_t)(getEffectForce(effect, m_gains[1], 1));
-	  }
+			forces[1] += (int32_t)(getEffectForce(effect, m_gains[1], 1));
+		}
 	}
 	forces[0] = (int32_t)((float)1.0 * forces[0] * m_gains[0].totalGain / 10000); // each effect gain * total effect gain = 10000
-	//forces[1] = (int32_t)((float)1.0 * forces[1] * m_gains[1].totalGain / 10000); // each effect gain * total effect gain = 10000
+	forces[1] = (int32_t)((float)1.0 * forces[1] * m_gains[1].totalGain / 10000); // each effect gain * total effect gain = 10000
 	forces[0] = map(forces[0], -10000, 10000, -250, 250);
-	//forces[1] = map(forces[1], -10000, 10000, -250, 250);
+	forces[1] = map(forces[1], -10000, 10000, -250, 250);
 }
 
 int32_t Joystick_::ConstantForceCalculator(volatile TEffectState& effect) 
@@ -609,18 +609,16 @@ void Joystick_::setButton(uint8_t button, uint8_t value)
 		pressButton(button);
 	}
 }
-void Joystick_::pressButton(uint8_t button)
-{
-    if (button >= _buttonCount) return;
+void Joystick_::pressButton(uint8_t button){
+	if (button >= _buttonCount) return;
 
-    int index = button / 8;
-    int bit = button % 8;
+    	int index = button / 8;
+    	int bit = button % 8;
 
 	bitSet(_buttonValues[index], bit);
 	if (_autoSendState) sendState();
 }
-void Joystick_::releaseButton(uint8_t button)
-{
+void Joystick_::releaseButton(uint8_t button){
     if (button >= _buttonCount) return;
 
     int index = button / 8;
@@ -630,74 +628,61 @@ void Joystick_::releaseButton(uint8_t button)
 	if (_autoSendState) sendState();
 }
 
-void Joystick_::setXAxis(int16_t value)
-{
+void Joystick_::setXAxis(int16_t value){
 	_xAxis = value;
 	if (_autoSendState) sendState();
 }
-void Joystick_::setYAxis(int16_t value)
-{
+void Joystick_::setYAxis(int16_t value){
 	_yAxis = value;
 	if (_autoSendState) sendState();
 }
-void Joystick_::setZAxis(int16_t value)
-{
+void Joystick_::setZAxis(int16_t value){
 	_zAxis = value;
 	if (_autoSendState) sendState();
 }
 
-void Joystick_::setRxAxis(int16_t value)
-{
+void Joystick_::setRxAxis(int16_t value){
 	_xAxisRotation = value;
 	if (_autoSendState) sendState();
 }
-void Joystick_::setRyAxis(int16_t value)
-{
+void Joystick_::setRyAxis(int16_t value){
 	_yAxisRotation = value;
 	if (_autoSendState) sendState();
 }
-void Joystick_::setRzAxis(int16_t value)
-{
+void Joystick_::setRzAxis(int16_t value){
 	_zAxisRotation = value;
 	if (_autoSendState) sendState();
 }
 
-void Joystick_::setRudder(int16_t value)
-{
+void Joystick_::setRudder(int16_t value){
 	_rudder = value;
 	if (_autoSendState) sendState();
 }
-void Joystick_::setThrottle(int16_t value)
-{
+void Joystick_::setThrottle(int16_t value){
 	_throttle = value;
 	if (_autoSendState) sendState();
 }
-void Joystick_::setAccelerator(int16_t value)
-{
+void Joystick_::setAccelerator(int16_t value){
 	_accelerator = value;
 	if (_autoSendState) sendState();
 }
-void Joystick_::setBrake(int16_t value)
-{
+void Joystick_::setBrake(int16_t value){
 	_brake = value;
 	if (_autoSendState) sendState();
 }
-void Joystick_::setSteering(int16_t value)
-{
+void Joystick_::setSteering(int16_t value){
 	_steering = value;
 	if (_autoSendState) sendState();
 }
 
-void Joystick_::setHatSwitch(int8_t hatSwitchIndex, int16_t value)
-{
+void Joystick_::setHatSwitch(int8_t hatSwitchIndex, int16_t value){
 	if (hatSwitchIndex >= _hatSwitchCount) return;
 	
 	_hatSwitchValues[hatSwitchIndex] = value;
 	if (_autoSendState) sendState();
 }
 
-int Joystick_::buildAndSet16BitValue(bool includeValue, int16_t value, int16_t valueMinimum, int16_t valueMaximum, int16_t actualMinimum, int16_t actualMaximum, uint8_t dataLocation[]) 
-{
+int Joystick_::buildAndSet16BitValue(bool includeValue, int16_t value, int16_t valueMinimum, int16_t valueMaximum, int16_t actualMinimum, int16_t actualMaximum, uint8_t dataLocation[]) {
 	int16_t convertedValue;
 	uint8_t highByte;
 	uint8_t lowByte;
