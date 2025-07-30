@@ -19,7 +19,7 @@ void pwm::setPWM(int16_t force) {
  	force = constrain(abs(force),0,250);
 	int16_t normalizedForce;
 
-	if (force > 5) {
+	if (force > 0) {
 		normalizedForce = map(force,0,250, 150,MAXFORCE);
 	} else {
 		normalizedForce = 0;
