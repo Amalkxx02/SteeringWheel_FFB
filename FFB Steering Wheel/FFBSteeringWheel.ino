@@ -47,7 +47,7 @@ Gains gains[1];
 //initialize joystick inputes 
 Joystick_ Joystick(JOYSTICK_DEFAULT_REPORT_ID,JOYSTICK_TYPE_JOYSTICK,
   12, 4,                  // Button Count, Hat Switch Count
-  true, true, true,     // X and Y, but no Z Axis || Steering, Accelerator, Hand Break
+  true, true, true,     // X, Y, Z Axis || Steering, Accelerator, Hand Break
   true, true, false,   //  Rx, Ry, no Rz          || Clutch, Break
   false, false,          // No rudder or throttle
   false, false, false);    // No accelerator, brake, or steering
@@ -74,9 +74,9 @@ void tick(void)
 }
 
 void setup() {
-  Serial.begin(115200);
+	Serial.begin(115200);
 
-  gains[0].totalGain         = 80;
+	gains[0].totalGain         = 80;
 	gains[0].constantGain      = 70;
 
   pinMode(motorPinA, OUTPUT);
@@ -122,7 +122,7 @@ void setup() {
   
 }
 
-ISR(TIMER3_COMPA_vect){
+ISR(TIMER3_COMPA_vect) {
   Joystick.getUSBPID();
 }
 
@@ -180,11 +180,5 @@ void loop() {
   //Serial.print(" ");
   //Serial.print(currentPosition);
   //Serial.print(" ");
-  //Serial.print(deltaPosition);
-  //Serial.print(" ");
-  //Serial.print(filteredCurrentVelocity);
-  //Serial.print(" ");
-  //Serial.print(currentVelocity);
-  //Serial.println();
 
 }
